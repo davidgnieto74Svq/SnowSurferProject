@@ -5,6 +5,13 @@ using UnityEngine.SceneManagement;
 public class CrashDetector : MonoBehaviour
 {
     [SerializeField] private ParticleSystem crashParticles;
+    [SerializeField] private AudioClip crashSound;
+    AudioSource audioSource;
+
+    void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
 
     void OnTriggerEnter2D(Collider2D other)
     {        
@@ -12,7 +19,8 @@ public class CrashDetector : MonoBehaviour
 
         if (other.gameObject.layer == layer)
         {
-            Debug.Log("CRASH!!!");
+           //Play Sound
+            audioSource.PlayOneShot(crashSound);
             
             //Play Particles
             crashParticles.Play();
