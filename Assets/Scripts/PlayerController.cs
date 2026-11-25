@@ -1,48 +1,50 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    [Header("Player Movement Settings")]
     [SerializeField] private float boostMultiplier = 30f; // Multiplier for the boost speed
     [SerializeField] private float baseSpeed = 15f; 
-
-    [Header("Score Manager")]
-    [SerializeField] private ScoreManager scoreManager;
-
-    [Header("Pause Menu")]
+    [SerializeField] private ScoreManager scoreManager;   
     [SerializeField] private GameObject pauseMenuPanel;
+    [SerializeField] private float jumpForce = 5f; 
 
+    [SerializeField] private AudioClip jumpSound; // Audio clip for jump sound
     
-
-
+    private AudioSource audioSource; // Audio source component to play sounds
+    
     Rigidbody2D rb;
     SurfaceEffector2D surfaceEffector2D;
 
     InputAction moveAction;
+    InputAction jumpAction;
+    bool isGrounded; 
     Vector2 moveValue ; 
     int flipCount;
     float totalRotation;
-    float previusRotation;
-    float maxTorque = 400f;
+    float previousRotation;
 
-    private bool isPaused = false;
+    float maxTorque = 500f;
+
+    private bool isPaused = false; 
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        Time.timeScale = 1f; 
 
-        Time.timeScale = 1f; // Ensure the game is not paused at the start
-
-        // Active the selected character sprite
-
-        int selectedCharacter = PlayerPrefs.GetInt("SelectedCharacter", 0); 
+        //Active the selected character sprite 
+        int selectedCharacter = PlayerPrefs.GetInt("SelectedCharacter", 0);
         transform.GetChild(0).GetChild(selectedCharacter).gameObject.SetActive(true);
 
-
-
-
+        // Get the Move action from the Input System
         moveAction = InputSystem.actions.FindAction("Move");
+        
+        jumpAction = InputSystem.actions.FindAction("Jump");
+
+        audioSource = GetComponent<AudioSource>();
     
         // Get the Rigidbody2D component
         rb = GetComponent<Rigidbody2D>();
@@ -53,37 +55,73 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+        // Check if the Escape key is pressed
+        if (Keyboard.current != null && 
+        Keyboard.current.escapeKey.wasPressedThisFrame)
         {
-            TogglePause();
+            ToogglePause();            
         }
 
         RotatePlayer();
         BoostPlayer();
         CalculateFlips();
+        Jump();
     }
 
-    private void TogglePause()
+    void Jump()
     {
-        isPaused = !isPaused;
-        pauseMenuPanel.SetActive(isPaused);
-        Time.timeScale = isPaused ? 0f : 1f; // Pause or resume the game
+        if (isPaused || !isGrounded) return; 
+
+        bool jumpPressed = jumpAction != null ? jumpAction.WasPressedThisFrame() : Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame;
+        
+        if (jumpPressed)
+        {
+            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            audioSource.PlayOneShot(jumpSound); // Play the jump sound
+            isGrounded = false;
+        }
+
     }
 
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Floor"))
+        {
+            isGrounded = true;
+        }
+    }
+
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Floor"))
+        {
+            isGrounded = false;
+        }
+    }
+
+    private void ToogglePause()
+    {
+        isPaused = !isPaused; 
+
+        pauseMenuPanel.SetActive(isPaused); 
+
+        Time.timeScale = isPaused ? 0f : 1f;        
+    }
+
+    /// <summary>
+    /// Calculates the number of flips the player has performed based on their rotation and updates the score accordingly.
+    /// </summary>
     private void CalculateFlips()
     {
-        float currentRotation = transform.rotation.eulerAngles.z;
-        totalRotation += Mathf.DeltaAngle(previusRotation, currentRotation);
-        previusRotation = currentRotation;
-
-        if (Mathf.Abs(totalRotation) >= 360f)
+        float currentRotation = transform.rotation.eulerAngles.z; 
+        totalRotation += Mathf.DeltaAngle(previousRotation, currentRotation); 
+        if (Mathf.Abs(totalRotation) >= 340f ) 
         {
             flipCount++;
-            totalRotation = 0f; 
-            scoreManager.UpdateScore(flipCount*100); 
-          
+            totalRotation = 0f;            
+            scoreManager.UpdateScore(flipCount*100); // Update the score based on flips
         }
-        previusRotation = currentRotation;
+        previousRotation = currentRotation;
     }
 
     private void BoostPlayer()
@@ -101,7 +139,7 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    private void RotatePlayer()
+private void RotatePlayer()
     {
         // Read the value of the Move action and store it in moveValue
         moveValue = moveAction.ReadValue<Vector2>();

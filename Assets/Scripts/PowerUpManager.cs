@@ -6,6 +6,14 @@ public class PowerUpManager : MonoBehaviour
     [SerializeField] private float scaleMultiplier = 1.5f; 
     [SerializeField] private float scaleDuration = 2.5f;
     [SerializeField] private float animationDuration = 0.15f;
+    [SerializeField] private AudioClip powerUpSound;
+
+    private AudioSource audioSource;
+
+    void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
 
     void OnTriggerEnter2D(Collider2D other)
     {
@@ -14,6 +22,9 @@ public class PowerUpManager : MonoBehaviour
             //disable the collider and sprite renderer of the power-up object
             GetComponent<Collider2D>().enabled = false; 
             transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = false;
+
+            //Play the power-up sound
+            audioSource.PlayOneShot(powerUpSound);
             
             //Start the scaling coroutine
             StartCoroutine(ScalePlayer(other.transform));            
@@ -61,11 +72,5 @@ public class PowerUpManager : MonoBehaviour
         }
 
         player.localScale = originalScale;
-
-
     }    
-
-
-
-
 }
