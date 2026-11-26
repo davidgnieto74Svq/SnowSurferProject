@@ -23,6 +23,11 @@ public class MenuManager : MonoBehaviour
         SceneManager.LoadScene("Characters");
     }
 
+    public void GoToControls()
+    {
+        SceneManager.LoadScene("Controls");
+    }
+
     public void GoToMenu()
     {
         SceneManager.LoadScene("Menu");
