@@ -3,10 +3,18 @@ using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour
 {
+    // "Play" button of the main menu: first show the screen that explains the game
     public void PlayGame()
     {
+         SceneManager.LoadScene("HowToPlay");
+    }
+
+    // "Let's play" button of the HowToPlay screen
+    public void StartGame()
+    {
+         GameSession.StartNewGame(); // New game: score starts at 0
          SceneManager.LoadScene("Level1");
-    } 
+    }
 
     public void ExitGame()
     {

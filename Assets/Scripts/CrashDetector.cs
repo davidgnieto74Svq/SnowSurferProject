@@ -45,6 +45,13 @@ public class CrashDetector : MonoBehaviour
 
     void ReloadScene()
     {
+        // In the bonus round a crash just ends the bonus (and goes back to the level)
+        if (BonusRound.Instance != null)
+        {
+            BonusRound.Instance.EndBonus();
+            return;
+        }
+
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);    
     }
 

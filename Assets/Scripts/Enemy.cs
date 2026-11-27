@@ -10,6 +10,8 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float rayStartHeight = 2f;        // The raycast starts this far above the enemy, so it never begins below the floor
     [SerializeField] private float rotationSpeed = 10f;        // How fast the enemy tilts to match the slope
     [SerializeField] private LayerMask floorLayer;             // Select the "Floor" layer in the Inspector
+    [SerializeField] private float growthPerUnit = 0.03f;      // The snowball grows while it rolls (size added per unit travelled)
+    [SerializeField] private float maxSizeMultiplier = 1.35f;  // Maximum size (1.35 = 35% bigger), so it can still be jumped
 
     Rigidbody2D rb;
     Transform player;
@@ -19,6 +21,9 @@ public class Enemy : MonoBehaviour
     Collider2D ownCollider;
     ContactFilter2D floorFilter;
     readonly RaycastHit2D[] rayHits = new RaycastHit2D[4];
+    Vector3 startScale;
+    float startGroundOffset;
+    float distanceRolled;
 
     void Start()
     {
@@ -36,6 +41,8 @@ public class Enemy : MonoBehaviour
         // Uses bounds.min instead of half the height, so it also works when the collider
         // has an Offset (e.g. a small capsule placed at the feet / board).
         groundOffset = transform.position.y - ownCollider.bounds.min.y;
+        startGroundOffset = groundOffset;
+        startScale = transform.localScale;
 
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
         if (playerObject != null) player = playerObject.transform;
@@ -56,6 +63,18 @@ public class Enemy : MonoBehaviour
         }
 
         MoveAlongFloor(isActive ? speed : 0f);
+        if (isActive) Grow();
+    }
+
+    /// <summary>
+    /// Like a real snowball: the more it rolls, the bigger it gets (up to maxSizeMultiplier).
+    /// </summary>
+    private void Grow()
+    {
+        distanceRolled += speed * Time.fixedDeltaTime;
+        float size = Mathf.Min(1f + distanceRolled * growthPerUnit, maxSizeMultiplier);
+        transform.localScale = startScale * size;
+        groundOffset = startGroundOffset * size; // Bigger ball: its center is higher above the floor
     }
 
     /// <summary>

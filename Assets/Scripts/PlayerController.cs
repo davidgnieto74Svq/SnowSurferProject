@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     private AudioSource audioSource; // Audio source component to play sounds
     
     Rigidbody2D rb;
-    SurfaceEffector2D surfaceEffector2D;
+    SurfaceEffector2D[] surfaceEffectors; // All the floors (iceberg + platforms) that push the player
 
     InputAction moveAction;
     InputAction jumpAction;
@@ -56,7 +56,7 @@ public class PlayerController : MonoBehaviour
     
         // Get the Rigidbody2D component
         rb = GetComponent<Rigidbody2D>();
-        surfaceEffector2D = FindAnyObjectByType<SurfaceEffector2D>();           
+        surfaceEffectors = FindObjectsByType<SurfaceEffector2D>();
     
     }
 
@@ -127,7 +127,8 @@ public class PlayerController : MonoBehaviour
         {
             flipCount++;
             totalRotation = 0f;            
-            scoreManager.UpdateScore(flipCount*100); // Update the score based on flips
+            scoreManager.AddPoints(100); // Each flip gives 100 points
+            scoreManager.ShowMessage("¡Giro! +100", 1f);
         }
         previousRotation = currentRotation;
     }
@@ -135,13 +136,11 @@ public class PlayerController : MonoBehaviour
     private void BoostPlayer()
     {
         // if the player is moving  (up), increase the speed of the SurfaceEffector2D
-        if (moveValue.y > 0)
+        // Increase speed when moving forward, reset it when not
+        float speed = moveValue.y > 0 ? boostMultiplier : baseSpeed;
+        foreach (SurfaceEffector2D effector in surfaceEffectors)
         {
-            surfaceEffector2D.speed = boostMultiplier; // Increase speed when moving forward
-        }
-        else
-        {
-            surfaceEffector2D.speed = baseSpeed; // Reset speed when not moving forward
+            effector.speed = speed;
         }
 
     }
