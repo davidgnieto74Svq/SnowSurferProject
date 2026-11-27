@@ -30,11 +30,18 @@ public class FinishLine : MonoBehaviour
 
 
             //Reload Scene after 1.5 second
-            Invoke(nameof(ReloadScene), 1.5f); 
+            Invoke(nameof(NextLevel), 1.5f); 
 
         }
     }
+void NextLevel()
+    {
+        // Load the next scene in the build settings
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        SceneManager.LoadScene(currentSceneIndex + 1);
 
+        
+    }
     /// <summary>
     /// Reloads the current scene after a delay.
     /// </summary>

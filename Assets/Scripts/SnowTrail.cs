@@ -8,9 +8,13 @@ public class SnowTrail : MonoBehaviour
 
      void Start()
     {
+        // Same check as PlayerController: if the index doesn't exist, use the first character
+        Transform characters = transform.GetChild(0);
         int selectedCharacter = PlayerPrefs.GetInt("SelectedCharacter", 0);
+        if (selectedCharacter < 0 || selectedCharacter >= characters.childCount)
+            selectedCharacter = 0;
 
-        animator = transform.GetChild(0).GetChild(selectedCharacter).GetComponent<Animator>();
+        animator = characters.GetChild(selectedCharacter).GetComponent<Animator>();
     }
 
 void OnCollisionEnter2D(Collision2D collision)
@@ -18,8 +22,8 @@ void OnCollisionEnter2D(Collision2D collision)
         int layer = LayerMask.NameToLayer("Floor");
         if (collision.gameObject.layer == layer)
         {
-            snowTrailParticles.Play();
-            animator.SetBool("isJumping", false);
+            if (snowTrailParticles != null) snowTrailParticles.Play();
+            if (animator != null) animator.SetBool("isJumping", false);
         }
     }
 
@@ -28,8 +32,8 @@ void OnCollisionExit2D(Collision2D collision)
         int layer = LayerMask.NameToLayer("Floor");
         if (collision.gameObject.layer == layer)
         {
-            snowTrailParticles.Stop();
-            animator.SetBool("isJumping", true);
+            if (snowTrailParticles != null) snowTrailParticles.Stop();
+            if (animator != null) animator.SetBool("isJumping", true);
         }
     }
 

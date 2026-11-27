@@ -36,8 +36,16 @@ public class PlayerController : MonoBehaviour
         Time.timeScale = 1f; 
 
         //Active the selected character sprite 
+        // If the saved index doesn't exist (e.g. a button with a wrong index), use the first character
+        Transform characters = transform.GetChild(0);
         int selectedCharacter = PlayerPrefs.GetInt("SelectedCharacter", 0);
-        transform.GetChild(0).GetChild(selectedCharacter).gameObject.SetActive(true);
+        if (selectedCharacter < 0 || selectedCharacter >= characters.childCount)
+        {
+            Debug.LogWarning($"SelectedCharacter {selectedCharacter} no existe (hay {characters.childCount} personajes). Se usa el 0.");
+            selectedCharacter = 0;
+            PlayerPrefs.SetInt("SelectedCharacter", 0);
+        }
+        characters.GetChild(selectedCharacter).gameObject.SetActive(true);
 
         // Get the Move action from the Input System
         moveAction = InputSystem.actions.FindAction("Move");
