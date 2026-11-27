@@ -6,7 +6,10 @@ using UnityEngine.SceneManagement;
 // It's a static class, so it isn't attached to any GameObject and it survives scene changes.
 public static class GameSession
 {
+    public const int MaxLives = 3;
+
     public static int Score { get; private set; }
+    public static int Lives { get; private set; } = MaxLives;
     public static float LevelTime { get; set; }
     public static bool ReturningFromBonus { get; private set; }
 
@@ -31,6 +34,7 @@ public static class GameSession
     public static void StartNewGame()
     {
         Score = 0;
+        Lives = MaxLives;
         scoreAtLevelStart = 0;
         currentLevel = "";
         LevelTime = 0f;
@@ -41,6 +45,16 @@ public static class GameSession
     public static void AddPoints(int points)
     {
         Score += points;
+    }
+
+    // The player crashed: one life less and the score goes back to 0.
+    // Returns true if there are lives left (false = game over).
+    public static bool LoseLife()
+    {
+        Lives = Mathf.Max(0, Lives - 1);
+        Score = 0;
+        scoreAtLevelStart = 0;
+        return Lives > 0;
     }
 
     // Called when a level scene starts.

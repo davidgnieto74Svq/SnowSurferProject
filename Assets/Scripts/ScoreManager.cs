@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 // HUD: shows the total points, the level time (or the bonus round countdown)
@@ -8,6 +9,8 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private TMP_Text scoreText;
     [SerializeField] private TMP_Text timeText;
     [SerializeField] private TMP_Text messageText;
+    [SerializeField] private Image[] lifeIcons;   // One heart per life
+    [SerializeField] private Color lostLifeColor = new Color(0.15f, 0.15f, 0.2f, 0.6f);
 
     float messageTimer;
 
@@ -27,6 +30,16 @@ public class ScoreManager : MonoBehaviour
                 timeText.text = "Bonus: " + Mathf.CeilToInt(BonusRound.Instance.TimeLeft) + " s";
             else
                 timeText.text = "Tiempo: " + FormatTime(GameSession.LevelTime);
+        }
+
+        // Hearts: full color for the lives left, dark for the lives lost
+        if (lifeIcons != null)
+        {
+            for (int i = 0; i < lifeIcons.Length; i++)
+            {
+                if (lifeIcons[i] != null)
+                    lifeIcons[i].color = i < GameSession.Lives ? Color.white : lostLifeColor;
+            }
         }
 
         // Hide the message after a while (unscaled time, so it also works on the pause screen)

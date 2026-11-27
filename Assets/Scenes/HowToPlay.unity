@@ -2207,7 +2207,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Los puntos se suman de nivel en nivel. \xA1Consigue entrar en el TOP 3!"
+  m_text: "\xA1Salta rocas y bolas de nieve! Sin vidas vuelves al principio. \xA1Entra en el TOP 3!"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d6db46478666f5b42b0754614d8f8899, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: a8886add9722c144da5aa4a9feee4f96, type: 2}
@@ -3958,7 +3958,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\xA1Salta rocas y bolas! Si chocas, repites el nivel"
+  m_text: '3 vidas: si chocas pierdes una y los puntos vuelven a 0'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d6db46478666f5b42b0754614d8f8899, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: a8886add9722c144da5aa4a9feee4f96, type: 2}
@@ -4232,7 +4232,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 95e21b6e83f42654d9535d7e0bc5233c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d770e6df14a73e94ca05a37bf386a624, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1

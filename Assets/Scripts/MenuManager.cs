@@ -23,17 +23,12 @@ public class MenuManager : MonoBehaviour
 
     public void GoToCredits()
     {
-        SceneManager.LoadScene("Credits");
+        SceneManager.LoadScene("Credit"); // The scene file is Credit.unity
     }
 
     public void GoToCharacters()
     {
         SceneManager.LoadScene("Characters");
-    }
-
-    public void GoToControls()
-    {
-        SceneManager.LoadScene("Controls");
     }
 
     public void GoToMenu()

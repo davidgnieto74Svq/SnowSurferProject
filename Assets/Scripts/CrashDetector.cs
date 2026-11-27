@@ -8,6 +8,7 @@ public class CrashDetector : MonoBehaviour
     [SerializeField] private AudioClip crashSound;
     AudioSource audioSource;
     bool hasCrashed;
+    bool gameOver;
 
     void Start()
     {
@@ -39,20 +40,43 @@ public class CrashDetector : MonoBehaviour
         if (crashParticles != null)
             crashParticles.Play();
 
-        //Reload Scene after 1.5 second
-        Invoke(nameof(ReloadScene), 1.5f);
-    }
-
-    void ReloadScene()
-    {
-        // In the bonus round a crash just ends the bonus (and goes back to the level)
+        // In the bonus round a crash doesn't cost a life: it just ends the bonus
         if (BonusRound.Instance != null)
         {
             BonusRound.Instance.EndBonus();
             return;
         }
 
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);    
+        // Lose a life (the score goes back to 0)
+        bool livesLeft = GameSession.LoseLife();
+        gameOver = !livesLeft;
+
+        ScoreManager hud = FindAnyObjectByType<ScoreManager>();
+        if (hud != null)
+        {
+            if (gameOver)
+                hud.ShowMessage("GAME OVER\nVuelves al principio", 3f);
+            else
+                hud.ShowMessage("¡Has perdido una vida!\nTe quedan " + GameSession.Lives, 2f);
+        }
+
+        // Wait a bit so the player can read the message
+        Invoke(nameof(ReloadScene), gameOver ? 3f : 2f);
+    }
+
+    void ReloadScene()
+    {
+        if (gameOver)
+        {
+            // No lives left: back to the beginning of the game
+            GameSession.StartNewGame();
+            SceneManager.LoadScene("Level1");
+        }
+        else
+        {
+            // Try the same level again
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
     }
 
 }
